@@ -1,7 +1,6 @@
 import streamlit as st
 from pytube import YouTube
 import random
-import re
 import os
 from zipfile import ZipFile
 
@@ -24,6 +23,11 @@ def zip_csv(directory_name, zip_file_name, filter):
          # Add files to zip file
          zip_object.write(file_path, os.path.basename(file_path))
 
+def clean_mp4(filter):
+   for folder_name, sub_folders, file_names in os.walk('./'):
+      for filename in file_names:
+         if filter(filename):
+            os.remove(filename)
 with st.sidebar:
     choice= st.radio("Navigation",["Provide Url",'download'])
 """
@@ -44,5 +48,8 @@ if choice == 'download':
     if os.path.exists('./Zipped file.zip'):
         with open("Zipped file.zip",'rb') as f:
             st.download_button('download_video',f,file_name="Zipped file.zip")
+            clean_mp4(lambda name: 'mp4' in name)
+            clean_mp4(lambda name: 'zip' in name)
+
     else:
        st.write('Go to provide Url button')
